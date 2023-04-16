@@ -2,7 +2,7 @@ import { motion, useAnimation, useAnimationControls } from "framer-motion";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { tw } from "../utility/tailwindUtil";
 import { LightBulbIcon, MoonIcon, SunIcon } from "@heroicons/react/24/solid";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const DarkToggle = () => {
 	const [darkMode, setDarkMode] = useDarkMode();
@@ -27,6 +27,7 @@ const DarkToggle = () => {
 	return <motion.button
 		animate={buttonAnimation}
 		onClick={e => setColorScheme(!darkMode)}
+		// whileHover={{ scale: 1.1 }}
 		style={{zIndex: 100}}
 		className={tw(
 			`absolute`,
