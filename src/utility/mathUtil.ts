@@ -1,7 +1,13 @@
-import Rand, { PRNG } from "rand-seed";
+import Rand from "rand-seed";
 
 export const remap = (input: number, inMin: number, inMax: number, outMin: number, outMax: number) => {
 	return outMin + (input - inMin) * (outMax - outMin) / (inMax - inMin);
+}
+
+export const formatMilliseconds = (durationMs: number) => {
+	const tenths = Math.floor(durationMs / 100) / 10;
+
+	return tenths.toFixed(1);
 }
 
 declare global {

@@ -19,7 +19,6 @@ const Home = () => {
 		),
 		playButton: {
 			container: tw(
-				selectedSize.w == 0 || selectedSize.h == 0 ? "hidden" : "",
 				`bg-stone-500 dark:bg-nebula-300`,
 				`transition-colors`,
 				`text-stone-50 dark:text-orange-100`,
@@ -51,11 +50,13 @@ const Home = () => {
 		<motion.button
 			onClick={e => navigate(`/play?size=${selectedSize.w},${selectedSize.h}`)}
 			className={styles.playButton.container}
-			initial="rest" whileHover="hover" animate="rest" whileTap="tap"
+			initial="disabled" whileHover="hover" whileTap="tap"
+			animate={ selectedSize.w == 0 || selectedSize.h == 0 ? "disabled" : "rest" }
 			variants={{
 				rest: { scale: 1 },
 				hover: { scale: 1.1 },
-				tap: { scale: 0.9 }
+				tap: { scale: 0.9 },
+				disabled: { scale: 0 }
 			}}>
 			Play
 			<motion.span

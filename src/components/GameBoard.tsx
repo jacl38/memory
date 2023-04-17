@@ -40,7 +40,11 @@ const frontIcons = [
 	<TvIcon />,
 ]
 
-const GameBoard = (props: { containerScale: { w: number, h: number }, gameSize: { w: number, h: number } }) => {
+const GameBoard = (props: {
+	containerScale: { w: number, h: number },
+	gameSize: { w: number, h: number },
+	onSelect?: (index: number) => void
+}) => {
 	const aspectRatio = props.gameSize.w / props.gameSize.h;
 	const fitAspectRatio = props.containerScale.w / props.containerScale.h;
 	const fitToWidth = aspectRatio > fitAspectRatio;
@@ -112,7 +116,7 @@ const GameBoard = (props: { containerScale: { w: number, h: number }, gameSize: 
 			const cardIsFlipped = flipped.includes(i);
 
 			return <motion.button
-				onClick={e => { flipCard(i); }}
+				onClick={e => { flipCard(i); props.onSelect?.(i); }}
 				initial={ cardIsFlipped ? "flipped" : "rest" } whileHover={cardIsFlipped ? "flipped" : "hover"} animate={cardIsFlipped ? "flipped" : "rest"}
 				className="group relative"
 				style={{transformStyle: "preserve-3d"}}>

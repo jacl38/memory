@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import GameBoard from "../components/GameBoard";
 import { NavLink } from "react-router-dom";
 import { useStopwatch } from "../hooks/useStopwatch";
+import { formatMilliseconds } from "../utility/mathUtil";
+import { motion } from "framer-motion";
 
 const styles = {
 	outerContainer: tw(
@@ -35,14 +37,17 @@ const styles = {
 	),
 	header: {
 		container: tw(
-			`flex justify-center`,
+			`flex flex-col items-center`,
 			`w-full`,
 			`relative`
 		),
 		title: tw(
 			`text-2xl font-bold`,
 			`my-4`,
-			`transition-colors`
+		),
+		stopwatch: tw(
+			`text-3xl font-bold`,
+			`mb-3`,
 		),
 		backButton: tw(
 			`absolute left-4`,
@@ -88,12 +93,25 @@ const Game = () => {
 	return <>
 
 		<header className={styles.header.container}>
-			<h1 className={styles.header.title}>Memory Match</h1>
 			<NavLink className={styles.header.backButton} to="/">&lsaquo; Back</NavLink>
+			<h1 className={styles.header.title}>Memory Match</h1>
+			<motion.p
+				initial={{ rotate: 0 }}
+				animate={ elapsed == 0 ? "" : (Math.floor(elapsed / 1000) % 2 == 0 ? "left" : "right")}
+				variants={{
+					left: { rotate: -2, transition: { type: "spring", damping: 5 } },
+					right: { rotate: 2, transition: { type: "spring", damping: 5 } }
+				}}
+				className={styles.header.stopwatch}>
+					{formatMilliseconds(elapsed)} <span className="text-2xl">s</span>
+			</motion.p>
+			{/* <button onClick={e => setStopwatchEnabled(true)}>start</button> */}
+			{/* <button onClick={e => setStopwatchEnabled(false)}>pause</button> */}
+			{/* <button onClick={e => resetStopwatch()}>reset</button> */}
 		</header>
 
 		<div ref={gameContainer} className={styles.gameContainer}>
-			<GameBoard gameSize={gameSize} containerScale={gameContainerScale} />
+			<GameBoard gameSize={gameSize} containerScale={gameContainerScale} onSelect={i => setStopwatchEnabled(true)} />
 		</div>
 		
 	</>
