@@ -3,6 +3,7 @@ import SizeSelector from "../components/SizeSelector";
 import { NavLink, useNavigate } from "react-router-dom";
 import { tw } from "../utility/tailwindUtil";
 import { motion } from "framer-motion";
+import { useStopwatch } from "../hooks/useStopwatch";
 
 const Home = () => {
 	const [selectedSize, setSelectedSize] = useState<{w: number, h: number}>({w: 0, h: 0});

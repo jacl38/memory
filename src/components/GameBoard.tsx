@@ -47,10 +47,13 @@ const GameBoard = (props: { containerScale: { w: number, h: number }, gameSize: 
 
 	const [cards, setCards] = useState<number[]>([]);
 	const [iconIndices, setIconIndices] = useState<number[]>([]);
+	const [flipped, setFlipped] = useState<number[]>([]);
 
 	useEffect(() => {
-		setIconIndices(shuffleArray([...Array(32)].map((_, i) => i), Date.now()).slice(0, props.gameSize.w * props.gameSize.h / 2));
-		console.log(iconIndices);
+		setIconIndices(
+			shuffleArray( [...Array(32)].map((_, i) => i), Date.now() )
+				.slice(0, props.gameSize.w * props.gameSize.h / 2));
+		
 		const newCards: number[] = [];
 		for(let i = 0; i < props.gameSize.w * props.gameSize.h; i++) {
 			let cardValue = Math.floor(Math.random() * props.gameSize.w * props.gameSize.h / 2);
@@ -62,18 +65,12 @@ const GameBoard = (props: { containerScale: { w: number, h: number }, gameSize: 
 		setCards(newCards);
 	}, [props.gameSize]);
 
-	const [flipped, setFlipped] = useState<number[]>([]);
-
 	const flipCard = (index: number) => {
-		setFlipped(currentFlipped => {
-			return [...new Set([...currentFlipped, index])];
-		});
+		setFlipped(currentFlipped => [...new Set([...currentFlipped, index])]);
 	}
 
 	const resetCard = (index: number) => {
-		setFlipped(currentFlipped => {
-			return currentFlipped.filter(i => i != index);
-		});
+		setFlipped(currentFlipped => currentFlipped.filter(i => i != index));
 	}
 
 	const styles = {
@@ -89,7 +86,7 @@ const GameBoard = (props: { containerScale: { w: number, h: number }, gameSize: 
 				`border-4 border-stone-400 dark:border-nebula-800`,
 				`bg-stone-300 dark:bg-nebula-600`,
 				`rounded-[20%]`,
-				`p-4`,
+				`p-[5%]`,
 				`w-full h-full`,
 				`transition-colors`,
 				`overflow-hidden`,
