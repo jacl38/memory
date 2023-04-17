@@ -43,7 +43,8 @@ const frontIcons = [
 const GameBoard = (props: {
 	containerScale: { w: number, h: number },
 	gameSize: { w: number, h: number },
-	onSelect?: (index: number) => void
+	onSelect?: (index: number) => void,
+	onComplete?: () => void
 }) => {
 	const aspectRatio = props.gameSize.w / props.gameSize.h;
 	const fitAspectRatio = props.containerScale.w / props.containerScale.h;
@@ -52,6 +53,9 @@ const GameBoard = (props: {
 	const [cards, setCards] = useState<number[]>([]);
 	const [iconIndices, setIconIndices] = useState<number[]>([]);
 	const [flipped, setFlipped] = useState<number[]>([]);
+	const [matched, setMatched] = useState<number[]>([]);
+
+	const [activeCardIndex, setActiveCardIndex] = useState<number>();
 
 	useEffect(() => {
 		setIconIndices(
@@ -70,7 +74,31 @@ const GameBoard = (props: {
 	}, [props.gameSize]);
 
 	const flipCard = (index: number) => {
+		if(index == activeCardIndex || matched.includes(index)) return;
 		setFlipped(currentFlipped => [...new Set([...currentFlipped, index])]);
+		props.onSelect?.(index);
+		
+		// No active card index
+		if(activeCardIndex == undefined) {
+			// Flipped card is now the active card
+			setActiveCardIndex(index);
+
+			// Unflip all the unmatched flipped cards
+			// (Should technically only be one)
+			flipped.forEach(i => {
+				if(!matched.includes(i) && i != index) {
+					resetCard(i);
+				}
+			});
+		} else { // Active card index exists
+			// Check if the active card and the flipped card match
+			if(cards[activeCardIndex] == cards[index]) {
+				// Mark them both as matched
+				setMatched(m => [...m, activeCardIndex, index]);
+			}
+			// Discard the active card
+			setActiveCardIndex(undefined);
+		}
 	}
 
 	const resetCard = (index: number) => {
@@ -103,6 +131,12 @@ const GameBoard = (props: {
 		}
 	}
 
+	useEffect(() => {
+		if(matched.length == props.gameSize.w * props.gameSize.h && matched.length > 0) {
+			props.onComplete?.();
+		}
+	}, [matched]);
+
 	return <div
 		style={{
 			width: fitToWidth ? props.containerScale.w : props.containerScale.h * aspectRatio,
@@ -112,12 +146,24 @@ const GameBoard = (props: {
 			// perspective: 1000
 		}}
 		className={styles.gridContainer}>
+
 		{[...Array(props.gameSize.w * props.gameSize.h)].map((_, i) => {
 			const cardIsFlipped = flipped.includes(i);
+			const cardIsMatched = matched.includes(i);
 
 			return <motion.button
-				onClick={e => { flipCard(i); props.onSelect?.(i); }}
-				initial={ cardIsFlipped ? "flipped" : "rest" } whileHover={cardIsFlipped ? "flipped" : "hover"} animate={cardIsFlipped ? "flipped" : "rest"}
+				onClick={e => flipCard(i)}
+
+				initial={cardIsFlipped ? "flipped" : "rest"}
+				whileHover={
+					cardIsMatched ? "matched"
+						: cardIsFlipped ? "flipped" : "hover"
+				}
+				animate={
+					cardIsMatched ? "matched"
+						: cardIsFlipped ? "flipped" : "rest"
+				}
+
 				className="group relative"
 				style={{transformStyle: "preserve-3d"}}>
 				<motion.div
@@ -141,9 +187,18 @@ const GameBoard = (props: {
 							rotateZ: 0,
 							scale: 1,
 							transition: { type: "spring" }
+						},
+						"matched": {
+							rotateX: 0,
+							rotateY: 0,
+							rotateZ: 0,
+							scale: 0.75,
+							opacity: 0.5,
+							transition: { type: "spring" }
 						}
 					}}
 					className="w-full h-full">
+
 					<div
 						className={tw(styles.cell.base, styles.cell.back)}
 						style={{
@@ -151,10 +206,11 @@ const GameBoard = (props: {
 							transform: "rotateY(180deg)",
 							backgroundImage: `url(${cardBackImg})`,
 							backgroundSize: 20 - (props.gameSize.w * props.gameSize.h) / 6
-						}}
-					>
+					}}>
+
 						<div className={tw(styles.cell.shadow, cardIsFlipped ? "hidden" : "")}></div>
 					</div>
+					
 					<div className={styles.cell.base} style={{ backfaceVisibility: "hidden" }}>
 						{cardIsFlipped ? <p className="animate-fadeIn text-stone-600 dark:text-orange-100 transition-colors duration-500">
 							{frontIcons[iconIndices[cards[i]]]}
@@ -168,3 +224,15 @@ const GameBoard = (props: {
 }
 
 export default GameBoard;
+
+// On flip:
+//   if activeCard exists:
+//   |
+//   | if flippedCard matches activeCard
+//   | | flag both indices as matched
+//   | |
+//   | otherwise:
+//   |   keep both for viewing
+//   |
+//   otherwise:
+//     set activeCard to flippedCard

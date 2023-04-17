@@ -4,10 +4,16 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { tw } from "../utility/tailwindUtil";
 import { motion } from "framer-motion";
 import { useStopwatch } from "../hooks/useStopwatch";
+import { useHighScore } from "../hooks/useHighScore";
+import { formatMilliseconds } from "../utility/mathUtil";
 
 const Home = () => {
 	const [selectedSize, setSelectedSize] = useState<{w: number, h: number}>({w: 0, h: 0});
 	const navigate = useNavigate();
+	const [highScore] = useHighScore(
+		`${Math.min(selectedSize.w, selectedSize.h)}x${Math.max(selectedSize.w, selectedSize.h)}`,
+		true
+	);
 
 	const styles = {
 		header: tw(
@@ -46,6 +52,15 @@ const Home = () => {
 		</h2>
 		
 		<SizeSelector onSelect={setSelectedSize} />
+
+		{
+			selectedSize.w == 0 || selectedSize.h == 0
+				? <></>
+				: highScore == -1
+					? <p>No best time yet!</p>
+					: <p>Best: {formatMilliseconds(highScore)} <span className="text-sm">s</span></p>
+		}
+
 
 		<motion.button
 			onClick={e => navigate(`/play?size=${selectedSize.w},${selectedSize.h}`)}

@@ -19,7 +19,7 @@ export const useLocalStorage = (key: string, initialValue?: string) => {
 		} catch(e) { console.log(e) }
 	}
 
-	return [storedValue, setValue];
+	return [storedValue, setValue] as const;
 }
 
 export const useDarkMode = () => {

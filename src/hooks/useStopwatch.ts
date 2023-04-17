@@ -7,6 +7,7 @@ export const useStopwatch = () => {
 	const previousTime = useRef(0);
 
 	const setEnabled = (active: boolean) => {
+		if(active && timer.current != undefined) return;
 		if(active) {
 			previousTime.current = Date.now();
 			timer.current = setInterval(() => {
@@ -16,6 +17,7 @@ export const useStopwatch = () => {
 			}, 100);
 		} else {
 			clearInterval(timer.current);
+			timer.current = undefined;
 		}
 	}
 
