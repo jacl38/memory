@@ -224,15 +224,3 @@ const GameBoard = (props: {
 }
 
 export default GameBoard;
-
-// On flip:
-//   if activeCard exists:
-//   |
-//   | if flippedCard matches activeCard
-//   | | flag both indices as matched
-//   | |
-//   | otherwise:
-//   |   keep both for viewing
-//   |
-//   otherwise:
-//     set activeCard to flippedCard
