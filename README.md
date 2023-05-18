@@ -12,3 +12,5 @@ High scores are saved locally. You can clear them by clearing the local storage 
 
 ![board](images/board.png) | ![game](images/game.png)
 -|-
+
+Icons are from [Heroicons](https://heroicons.com/).
